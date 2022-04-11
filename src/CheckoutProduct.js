@@ -19,7 +19,7 @@ function CheckoutProduct({ id, title, price, rating, image }) {
                             <p>⭐</p>
                         ))}
                     </div>
-                    <button className="checkoutProduct__button" >Delete</button>
+                    <button className="checkoutProduct__button" >Remove from Cart</button>
                 </div>
             </div>
         </div>
