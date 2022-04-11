@@ -18,18 +18,15 @@ function Checkout() {
 
                 <div>
                     <h2 className="checkout__title">Shopping Cart</h2>
-                    {Array(basket.length).fill().map((_, i) => (
+                    {basket.map((item) => (
                         <CheckoutProduct
-                            title={basket[i].title}
-                            price={basket[i].price}
-                            rating={basket[i].rating}
-                            image={basket[i].image}
+                            id={item.id}
+                            title={item.title}
+                            price={item.price}
+                            rating={item.rating}
+                            image={item.image}
                         />
                     ))}
-                    {/* Basket Item */}
-                    {/* Basket Item */}
-                    {/* Basket Item */}
-                    {/* Basket Item */}
                 </div>
             </div>
 

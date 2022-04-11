@@ -19,7 +19,7 @@ function Home() {
 
                     <Product id={104} title="Redmi Note 10S (Shadow Black, 6GB RAM, 64GB Storage) - Super Amoled Display | 64 MP Quad Camera " price="14,999" rating={5} image="https://m.media-amazon.com/images/I/71oieHcp4WL._SL1500_.jpg" />
 
-                    <Product id={105} title="Lenovo IdeaPad S540 10th Gen Intel Core i5 15.6'(39.62cms) Full HD IPS T&L Laptop (8GB/1TB HDD + 256GB SSD/Windows 10/MS Office 2019/NVIDIA MX250 2GB GDDR5 Graphics/Mineral Grey/1.8Kg) 81NG00BVIN " price="70,999" rating={5} image="https://m.media-amazon.com/images/I/911dhIY2SCL._SL1500_.jpg" />
+                    <Product id={105} title="Lenovo IdeaPad S540 10th Gen Intel Core i5 15.6'(39.62cms) Full HD IPS T&L Laptop 81NG00BVIN " price="70,999" rating={5} image="https://m.media-amazon.com/images/I/911dhIY2SCL._SL1500_.jpg" />
                 </div>
 
                 <div className="home__row">

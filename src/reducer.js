@@ -11,7 +11,6 @@ export const getTotalPrice = (basket) => {
     return 0;
 }
 
-
 const reducer = (state, action) => {
     switch (action.type) {
         case 'ADD_TO_BASKET':
@@ -19,6 +18,20 @@ const reducer = (state, action) => {
                 ...state,
                 basket: [...state.basket, action.items],
             };
+
+        case 'DELETE_FROM_BASKET':
+            const index = state.basket.findIndex((basketItem) => basketItem.id === action.id);
+
+            let newBasket = [...state.basket];
+            if (index > -1) {
+                newBasket.splice(index, 1);
+            }
+
+            return {
+                ...state,
+                basket: newBasket,
+            };
+
         default:
             return state;
     }
