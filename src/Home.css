@@ -1,0 +1,26 @@
+.home {
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1600px;
+    /* to fix the width and avoid strecthing during zoom out and in different screen sizes */
+}
+
+.home__image {
+    width: 100%;
+    z-index: -1;
+    /* will send it back of other components, in simple terms back layer */
+    margin-bottom: -350px;
+    mask-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+    /* liner gradient is used to give the fade out effect */
+    /* 2nd argument black is used to  start to fade out from the middle of the image */
+    /* without 2nd argument black the fade out will start from the top to bottom*/
+}
+
+.home__row {
+    display: flex;
+    /* this will bring the products side by and side and white background to it */
+    z-index: 1;
+    margin: 5px 5px;
+}
