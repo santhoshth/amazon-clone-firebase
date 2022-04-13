@@ -8,6 +8,11 @@
     z-index: 100;
 }
 
+.link {
+    color: white;
+    text-decoration: none;
+}
+
 .header__logo {
     width: 100px;
     object-fit: contain;
@@ -67,4 +72,5 @@
 .header__basketCount {
     margin-left: 5px;
     margin-right: 10px;
+    color: #fb9701;
 }
