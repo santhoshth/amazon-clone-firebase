@@ -5,10 +5,26 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import { useStateValue } from './StateProvider';
+import { auth } from './firebase';
+import { signOut } from 'firebase/auth';
 
 function Header() {
-    const [{ basket }, updateState] = useStateValue();
+    const [{ basket, user }, updateState] = useStateValue();
+
     const qty = basket.length;
+
+    const signOutUser = () => {
+        if (user) {
+            signOut(auth)
+                .then(() => {
+                    console.log(`SIGN OUT --- ${user.email}`);
+                })
+                .catch(err => {
+                    alert(err.message);
+                })
+        }
+    }
+
     return (
         <div className='header'>
             {/* Amazon Logo */}
@@ -25,16 +41,18 @@ function Header() {
 
             {/* Header Navigation Icons like Sign in, Orders, Cart Navigation*/}
             <div className='header__nav'>
-                <div className='header__option'>
-                    <span className='header__optionLineOne'>
-                        Hello, Guest
-                    </span>
-                    <Link className='link' to='/login'>
-                        <span className='header__optionLineTwo'>
-                            Sign in
+                {/* If no user then navigate to login page */}
+                <Link className='link' to={!user && '/login'}>
+                    <div onClick={signOutUser} className='header__option'>
+                        <span className='header__optionLineOne'>
+                            Hello, {user ? user.email : "Guest"}
                         </span>
-                    </Link>
-                </div>
+
+                        <span className='header__optionLineTwo' >
+                            {user ? 'Sign out' : 'Sign In'}
+                        </span>
+                    </div>
+                </Link>
 
                 <div className='header__option'>
                     <span className='header__optionLineOne'>

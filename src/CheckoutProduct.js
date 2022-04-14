@@ -11,6 +11,7 @@ function CheckoutProduct({ id, title, price, rating, image }) {
             type: 'DELETE_FROM_BASKET',
             id: id,
         })
+        console.log(`DELETE FROM CART --- ${title}`);
     }
 
     return (

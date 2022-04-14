@@ -18,11 +18,10 @@ function Login() {
         // firebase stuff for login
         signInWithEmailAndPassword(auth, email, password)
             .then((credentials) => {
-                console.log("sign in successfull");
-                console.log(credentials.user);
                 if (credentials) {
                     navigate('/');
                 }
+                console.log(`SIGN IN --- ${email}`);
             })
             .catch((err) => alert(err.message));
     }
@@ -35,11 +34,10 @@ function Login() {
         createUserWithEmailAndPassword(auth, email, password)
             .then((credentials) => {
                 // if successfully created a new user with email and password
-                console.log("account created successfully");
-                console.log(credentials.user);
                 if (credentials) {
                     navigate('/');
                 }
+                console.log(`NEW USER --- ${email}`);
             })
             .catch((error) => alert(error.message));
     }

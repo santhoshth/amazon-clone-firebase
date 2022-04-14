@@ -18,7 +18,7 @@ function Product({ id, title, price, rating, image }) {
                 image: image,
             }
         })
-
+        console.log(`ADDED TO CART --- ${title}`);
     }
 
     return (
