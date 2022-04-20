@@ -1,7 +1,12 @@
+import { useEffect, useState } from 'react';
 import './Payment.css'
 import { useStateValue } from './StateProvider';
 import CheckoutProduct from './CheckoutProduct';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import CurrencyFormat from 'react-currency-format';
+import { getTotalPrice } from './reducer';
+import axios from './axios';
 
 function Payment() {
 
@@ -9,6 +14,69 @@ function Payment() {
 
     const qty = basket != null ? basket.length : 0;
     const item = basket.length > 1 ? "items" : "item";
+
+    const navigate = useNavigate();
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [succeeded, setSucceeded] = useState(false);
+    const [processing, setProcessing] = useState("");
+    const [error, setError] = useState(null);
+    const [disabled, setDisabled] = useState(true);
+    const [clientSecret, setClientSecret] = useState(true);
+
+
+    // when ever the basket changes, client secret will be updated with the new total amount and hepls us to charge the the right amount from the customer
+    useEffect(() => {
+        // generate the special stripe secret which allows us to charge a customer
+        const getClientSecret = async () => {
+            const response = await axios({
+                method: 'post',
+                // stripe expects the total in currencies subunits (Rs.1 is 100 paise)
+                url: `/payments/create?total=${getTotalPrice(basket) * 100}`
+            });
+            setClientSecret(response.data.clientSecret);
+        }
+
+        getClientSecret();
+
+    }, [basket])
+
+    console.log("secret key is", clientSecret);
+
+    const handleSubmit = async (event) => {
+        // stripe functionality here
+
+        event.preventDefault();
+        setProcessing(true);
+
+        // confirming the payment with client secret and payment method using Card Elements 
+        const payload = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: elements.getElement(CardElement)
+            }
+        }).then(({ paymentIntent }) => {
+            // paymentIntent means payment confirmation
+            setSucceeded(true);
+            setError(null);
+            setProcessing(false);
+
+            updateSate({
+                type: 'EMPTY_BASKET'
+            })
+
+            navigate('/orders');
+        })
+
+    }
+
+    const handleChange = event => {
+        // listen for changes in the CardElement
+        // and display any errors as the customer types their card details
+        setDisabled(event.empty);
+        setError(event.error ? event.error.message : "");
+    }
 
     return (
         <div className="payment">
@@ -46,10 +114,31 @@ function Payment() {
                     <div className="payment__title">
                         <h3>Payment Method</h3>
                     </div>
-                    <div className="payment__content">
+                    <div className="payment__details">
                         <h4>Card Details</h4>
-                        <form>
-                            <input type="card"></input>
+                        <form onSubmit={handleSubmit}>
+                            <CardElement onChange={handleChange} />
+
+
+                            <div className="payment__total">
+                                <CurrencyFormat
+                                    renderText={(value) => (
+                                        <h3>Order Total: {value}</h3>
+                                    )}
+                                    decimalScale={2}
+                                    value={getTotalPrice(basket)}
+                                    displayType={"text"}
+                                    thousandSeparator={true}
+                                    prefix={" ₹"}
+                                />
+
+                                <button disabled={processing || disabled || succeeded}>
+                                    <span>{processing ? "Processing" : "Buy Now"}</span>
+                                </button>
+                            </div>
+
+                            {/* Error div will show only in case of any error */}
+                            {error && <div>{error}</div>}
                         </form>
                     </div>
                 </div>

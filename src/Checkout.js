@@ -31,7 +31,7 @@ function Checkout() {
             </div>
 
             <div className="checkout__right">
-                <Subtotal total={totalPrice} itemCount={basket.length} />
+                {basket != null && basket.length > 0 ? <Subtotal total={totalPrice} itemCount={basket.length} /> : <></>}
             </div>
         </div>
     )
