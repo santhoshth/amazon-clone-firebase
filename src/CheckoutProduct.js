@@ -2,8 +2,9 @@ import React from 'react'
 import './CheckoutProduct.css';
 import { useStateValue } from './StateProvider';
 
-function CheckoutProduct({ id, title, price, rating, image }) {
+function CheckoutProduct({ id, title, price, rating, image, orderPageButton }) {
 
+    const buttonType = orderPageButton == true ? "Buy it again" : "Delete";
     const [{ basket }, updateState] = useStateValue();
 
     const deleteFromBasket = () => {
@@ -13,6 +14,23 @@ function CheckoutProduct({ id, title, price, rating, image }) {
         })
         console.log(`DELETE FROM CART --- ${title}`);
     }
+
+    const addToCart = () => {
+        // add the item into the data layer
+        updateState({
+            type: 'ADD_TO_BASKET',
+            items: {
+                id: id,
+                title: title,
+                price: price,
+                rating: rating,
+                image: image,
+            }
+        })
+        console.log(`ADDED TO CART AGAIN --- ${title}`);
+    }
+
+    const onClickType = orderPageButton == true ? addToCart : deleteFromBasket;
 
     return (
         <div className="checkoutProduct">
@@ -29,7 +47,9 @@ function CheckoutProduct({ id, title, price, rating, image }) {
                         <p>⭐</p>
                     ))}
                 </div>
-                <button className="checkoutProduct__button" onClick={deleteFromBasket}>Delete</button>
+
+                <button className="checkoutProduct__button" onClick={onClickType}>{buttonType}</button>
+
             </div>
         </div>
     )

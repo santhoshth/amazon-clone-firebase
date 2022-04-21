@@ -7,6 +7,8 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import CurrencyFormat from 'react-currency-format';
 import { getTotalPrice } from './reducer';
 import axios from './axios';
+import { db } from './firebase';
+import { collection, doc, setDoc } from "firebase/firestore";
 
 function Payment() {
 
@@ -58,6 +60,33 @@ function Payment() {
             }
         }).then(({ paymentIntent }) => {
             // paymentIntent means payment confirmation
+
+            const docData = {
+                basket: basket,
+                amount: paymentIntent.amount,
+                created: paymentIntent.created
+            }
+
+            // In the firestore db access the users collection
+            const userCollection = collection(db, "users");
+
+            // In the user collection reach to document of specific user id
+            const userDoc = doc(userCollection, user?.uid);
+
+            // In the document of user reach to the orders collection
+            const orderCollection = collection(userDoc, "orders");
+
+            // in the orders collection reach to document of unique order id
+            const orderDoc = doc(orderCollection, paymentIntent.id);
+
+            // in the document of order set doc with doc data
+            setDoc(orderDoc, docData);
+
+            // old way to set data
+            /* db.collection('users').doc(user?.uid).collection('orders').doc('paymentIntent.id').set({
+                data
+            }) */
+
             setSucceeded(true);
             setError(null);
             setProcessing(false);
@@ -68,7 +97,6 @@ function Payment() {
 
             navigate('/orders');
         })
-
     }
 
     const handleChange = event => {
@@ -117,9 +145,7 @@ function Payment() {
                     <div className="payment__details">
                         <h4>Card Details</h4>
                         <form onSubmit={handleSubmit}>
-                            <CardElement onChange={handleChange} />
-
-
+                            <CardElement className="payment__card" onChange={handleChange} />
                             <div className="payment__total">
                                 <CurrencyFormat
                                     renderText={(value) => (

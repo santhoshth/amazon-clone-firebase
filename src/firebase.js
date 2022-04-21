@@ -17,7 +17,9 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize database
 // firestore is real time database in firebase
-export const db = getFirestore(app);
+const db = getFirestore(app);
 
 // for Authentication
-export const auth = getAuth(app);
+const auth = getAuth(app);
+
+export { db, auth };
