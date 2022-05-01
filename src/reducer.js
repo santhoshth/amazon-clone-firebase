@@ -12,6 +12,7 @@ export const getTotalPrice = (basket) => {
     return 0;
 }
 
+
 const reducer = (state, action) => {
     switch (action.type) {
         case 'ADD_TO_BASKET':
@@ -43,6 +44,12 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 user: action.user,
+            };
+
+        case 'SET_BASKET':
+            return {
+                ...state,
+                basket: action.basket,
             };
 
         default:

@@ -1,36 +1,75 @@
 import React from 'react'
 import './CheckoutProduct.css';
 import { useStateValue } from './StateProvider';
+import { collection, doc, setDoc } from "firebase/firestore";
+import { db } from './firebase';
+
 
 function CheckoutProduct({ id, title, price, rating, image, orderPageButton }) {
 
     const buttonType = orderPageButton == true ? "Buy it again" : "Delete";
-    const [{ basket }, updateState] = useStateValue();
+    const [{ basket, user }, updateState] = useStateValue();
 
-    const deleteFromBasket = () => {
-        updateState({
-            type: 'DELETE_FROM_BASKET',
+    const toDo = async () => {
+        const item = {
             id: id,
-        })
-        console.log(`DELETE FROM CART --- ${title}`);
-    }
+            title: title,
+            price: price,
+            rating: rating,
+            image: image,
+        };
 
-    const addToCart = () => {
-        // add the item into the data layer
-        updateState({
-            type: 'ADD_TO_BASKET',
-            items: {
+        // ----------------------comment this out before deploy 1--------------------------
+        // In the firestore db access the users collection
+        const userCollection = collection(db, "users");
+
+        // In the user collection reach to document of specific user id
+        const userDoc = doc(userCollection, user?.uid);
+
+        const cartCollection = collection(userDoc, "basket");
+
+        const cartDoc = doc(cartCollection, "basketItems");
+
+        let newBasket = basket;
+        // ----------------------comment this out before deploy 1--------------------------
+
+        if (orderPageButton) {
+            await updateState({
+                type: 'ADD_TO_BASKET',
+                items: item
+            })
+            // ----------------------comment this out before deploy 2--------------------------
+            newBasket.push(item);
+            // ----------------------comment this out before deploy 2--------------------------
+
+            console.log(`ADDED TO CART AGAIN --- ${title}`);
+        } else {
+            await updateState({
+                type: 'DELETE_FROM_BASKET',
                 id: id,
-                title: title,
-                price: price,
-                rating: rating,
-                image: image,
-            }
-        })
-        console.log(`ADDED TO CART AGAIN --- ${title}`);
-    }
+            })
 
-    const onClickType = orderPageButton == true ? addToCart : deleteFromBasket;
+            // ----------------------comment this out before deploy 3--------------------------
+            const index = basket.findIndex((basketItem) => basketItem.id === id);
+
+            if (index > -1) {
+                newBasket.splice(index, 1);
+            }
+            // ----------------------comment this out before deploy 3--------------------------
+
+            console.log(`DELETE FROM CART --- ${title}`);
+        }
+
+        // ----------------------comment this out before deploy 4--------------------------
+        if (user) {
+            const docData = {
+                cart: newBasket
+            }
+
+            setDoc(cartDoc, docData);
+        }
+        // ----------------------comment this out before deploy 4--------------------------
+    }
 
     return (
         <div className="checkoutProduct">
@@ -48,7 +87,7 @@ function CheckoutProduct({ id, title, price, rating, image, orderPageButton }) {
                     ))}
                 </div>
 
-                <button className="checkoutProduct__button" onClick={onClickType}>{buttonType}</button>
+                <button className="checkoutProduct__button" onClick={toDo}>{buttonType}</button>
 
             </div>
         </div>

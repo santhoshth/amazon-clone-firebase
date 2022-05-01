@@ -1,23 +1,48 @@
 import "./Product.css";
-import React from 'react';
 import { useStateValue } from './StateProvider';
+import { collection, doc, setDoc } from "firebase/firestore";
+import { db } from './firebase';
 
 function Product({ id, title, price, rating, image }) {
 
-    const [{ basket }, updateState] = useStateValue();
+    const [{ basket, user }, updateState] = useStateValue();
 
-    const addToCart = () => {
+    const addToCart = async () => {
         // add the item into the data layer
-        updateState({
+        const item = {
+            id: id,
+            title: title,
+            price: price,
+            rating: rating,
+            image: image,
+        };
+
+        await updateState({
             type: 'ADD_TO_BASKET',
-            items: {
-                id: id,
-                title: title,
-                price: price,
-                rating: rating,
-                image: image,
-            }
+            items: item
         })
+
+        // ----------------------comment this out before deploy--------------------------
+        let newBasket = basket;
+        newBasket.push(item);
+
+        if (user) {
+            const docData = {
+                cart: newBasket
+            }
+
+            // In the firestore db access the users collection
+            const userCollection = collection(db, "users");
+            // In the user collection reach to document of specific user id
+            const userDoc = doc(userCollection, user?.uid);
+            const cartCollection = collection(userDoc, "basket");
+            const cartDoc = doc(cartCollection, "basketItems");
+
+            // console.log(docData);
+            setDoc(cartDoc, docData);
+        }
+        // ----------------------comment this out before deploy--------------------------
+
         console.log(`ADDED TO CART --- ${title}`);
     }
 

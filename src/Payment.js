@@ -12,7 +12,7 @@ import { collection, doc, setDoc } from "firebase/firestore";
 
 function Payment() {
 
-    const [{ basket, user }, updateSate] = useStateValue();
+    const [{ basket, user }, updateState] = useStateValue();
 
     const qty = basket != null ? basket.length : 0;
     const item = basket.length > 1 ? "items" : "item";
@@ -31,6 +31,10 @@ function Payment() {
 
     // when ever the basket changes, client secret will be updated with the new total amount and hepls us to charge the the right amount from the customer
     useEffect(() => {
+        if (!user) {
+            navigate('/Login');
+        }
+
         // generate the special stripe secret which allows us to charge a customer
         const getClientSecret = async () => {
             const response = await axios({
@@ -91,7 +95,7 @@ function Payment() {
             setError(null);
             setProcessing(false);
 
-            updateSate({
+            updateState({
                 type: 'EMPTY_BASKET'
             })
 

@@ -13,6 +13,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { useStateValue } from './StateProvider';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { collection, doc, setDoc, onSnapshot } from "firebase/firestore";
+import { db } from './firebase';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -20,27 +22,44 @@ const stripePromise = loadStripe("pk_test_51KoryQSGBRJuCHBJyvTcQpLutS1GhcS0ZX2Ll
 
 
 function App() {
-  const [{ }, updateState] = useStateValue();
+  const [{ basket, user }, updateState] = useStateValue();
 
   // to track who is logged in
   useEffect(() => {
-    // will only run once when the app component loads...
+
     onAuthStateChanged(auth, (authUser) => {
       if (authUser) {
-        // the user logged in
         updateState({
           type: 'SET_USER',
           user: authUser
         })
+
+        // ----------------------comment this out before deploy--------------------------
+        const userCollection = collection(db, "users");
+        const userDoc = doc(userCollection, authUser.uid);
+        const cartCollection = collection(userDoc, "basket");
+        const cartDoc = doc(cartCollection, "basketItems");
+
+        const unsub = onSnapshot(cartDoc, (doc) => (
+          updateState({
+            type: 'SET_BASKET',
+            basket: doc.data().cart
+          })
+        ));
+        // ----------------------comment this out before deploy--------------------------
       } else {
         // the user is logged out
         updateState({
           type: 'SET_USER',
           user: null
         })
+
+        updateState({
+          type: 'EMPTY_BASKET',
+        })
       }
     })
-  }, [])
+  }, [user])
 
   return (
     //BEM naming convention used

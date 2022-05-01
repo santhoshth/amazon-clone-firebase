@@ -1,4 +1,3 @@
-import React from 'react'
 import './Header.css';
 import logo from './logo.jpg';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -11,7 +10,7 @@ import { signOut } from 'firebase/auth';
 function Header() {
     const [{ basket, user }, updateState] = useStateValue();
 
-    const qty = basket.length;
+    const qty = basket?.length;
 
     const signOutUser = () => {
         if (user) {
@@ -21,7 +20,7 @@ function Header() {
                 })
                 .catch(err => {
                     alert(err.message);
-                })
+                });
         }
     }
 
@@ -70,7 +69,7 @@ function Header() {
                         Your
                     </span>
                     <span className='header__optionLineTwo'>
-                        Prime
+                        Account
                     </span>
                 </div>
 

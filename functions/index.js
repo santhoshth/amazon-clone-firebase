@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const express = require("express");
 const cors = require("cors");
-const stripe = require("stripe")('sk_test_51KoryQSGBRJuCHBJPOZzKSgLbLuh28kjQSHlz3UbS69iKbSJgkHuby5X8xKrR13u9Sh0XKrh53JgYKOzkCf9Unai00JXAgex3q');
+const stripe = require("stripe")("sk_test_51KoryQSGBRJuCHBJPOZzKSgLbLuh28kjQSHlz3UbS69iKbSJgkHuby5X8xKrR13u9Sh0XKrh53JgYKOzkCf9Unai00JXAgex3q");
 
 /* To setup API we need 4 things
     1. App Configuration
@@ -34,9 +34,8 @@ app.post("/payments/create", async (request, response) => {
 
     response.status(201).send({
         clientSecret: paymentIntent.client_secret,
-    })
+    });
 })
 
 // Listen Command
-
 exports.api = functions.https.onRequest(app);
